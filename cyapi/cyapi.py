@@ -160,7 +160,11 @@ class CyAPI(DetectionsMixin,DevicesMixin,DeviceCommandsMixin,ExceptionsMixin,
         resp = requests.post(AUTH_URL, headers=headers, json=payload)
 
         # Can't do anything without a successful authentication
-        assert resp.status_code == 200
+        try:
+            assert resp.status_code == 200
+        except AssertionError:
+            print("[-] ERORR-Code: {} The credentials might be invalid or the API might not respond properly.".format(resp.status_code))
+            exit(-1)
         data = resp.json()
         token = data.get('access_token',None)
         if debug_level > 1:
