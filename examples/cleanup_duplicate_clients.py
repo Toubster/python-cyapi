@@ -127,23 +127,25 @@ class CylanceApi():
             print(f"The client {name} with the ID {id} would get deleted! Offline-Date: {date}")
 
     def csvwriter(self, id=None, name=None, date=None, path=None):
-        if id and name and date and path:
-            try:
-                date_obj = datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%f')
-            except ValueError:
-                date_obj = datetime.strptime(date, '%Y-%m-%dT%H:%M:%S')
-            date = datetime.strftime(date_obj, "%d.%m.%Y-%H:%M:%S")
+        if id and name and path:
+            if date is not None:
+                try:
+                    date_obj = datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%f')
+                except ValueError:
+                    date_obj = datetime.strptime(date, '%Y-%m-%dT%H:%M:%S')
+                date = datetime.strftime(date_obj, "%d.%m.%Y-%H:%M:%S")
+            else:
+                date = "None"
             with open(path + ".txt", 'a', newline='', encoding='utf-8') as file:
                 csvwriter = csv.writer(file, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
                 csvwriter.writerow([id, name, date])
             with open(path + "-for-msteams.txt", 'a') as file:
                 file.write(str(id) + ";\\r" + name + ";\\r" + date + "\\r\\r\\n")
-        elif id and not name and not date and path:
+        elif id is not None and not name and not date and path:
             with open(path, 'w') as file:
                 file.write(str(id))
-
         else:
-            print("[-] Invalid file params!")
+            print("[-] Invalid file params at CSV Writer!")
             exit(-1)
 
 CyDuplicates = CylanceApi(**vars(args))
